@@ -22,7 +22,20 @@ public class HuffmanTree {
 	}
 
 	public HuffmanTree(BitInputStream in) {
-		
+		root = HuffmanTreeHelper(in);
+	}
+	
+	public Node HuffmanTreeHelper(BitInputStream in) {
+		Node cur = null;
+		if (in.hasBits()) {
+			int bit = in.readBit();
+			if(bit == 0) {
+				cur = new Node(in.readBits(9), null, null);
+			} else {
+				cur = new Node(-1, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
+			}
+		}
+		return cur;
 	}
 	
 	public void serialize(BitOutputStream out) {
