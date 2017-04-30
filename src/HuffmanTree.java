@@ -79,12 +79,19 @@ public class HuffmanTree {
 	}
 
 	public void serialize(BitOutputStream out) {
-		Node cur = this.root;
-		if(cur.type != -1) {
-			out.writeBit(0);
-			out.writeBits(cur.type, 9);
-		} else {
-			out.writeBit(1);
+		serializeHelper(root, out);
+	}
+
+	public static void serializeHelper(Node cur, BitOutputStream out) {
+		if(cur != null) {
+			if(cur.type != -1) {
+				out.writeBit(0);
+				out.writeBits(cur.type, 9);
+			} else {
+				out.writeBit(1);
+				serializeHelper(cur.left, out);
+				serializeHelper(cur.right, out);
+			}
 		}
 	}
 
