@@ -6,20 +6,25 @@ public class HuffmanTree {
 
 	private static class Node implements Comparator<Node> {
 
-		private char type;
+		private short type;
 		private  int freq;
 		private Node left;
 		private Node right;
 
-		public Node(char type, int freq, Node left, Node right) {
+		public Node(short type, int freq, Node left, Node right) {
 			this.type = type;
 			this.freq = freq;
 			this.left = left;
 			this.right = right;
 		}
+		
 
 		public int getFreq() {
 			return freq;
+		}
+		
+		public short getBits() {
+			return type;
 		}
 
 		public int compare(Node o1, Node o2) {
@@ -30,6 +35,10 @@ public class HuffmanTree {
 			} else {
 				return 0;
 			}
+		}
+		
+		public boolean isLeaf() {
+			return type != -1;
 		}
 	}
 
@@ -43,7 +52,7 @@ public class HuffmanTree {
 		ArrayList<Short> key = new ArrayList<Short>(m.keySet());
 
 		for(short sh : key) {
-			Node allLeaf = new Node((char) sh, m.get(sh), null, null);
+			Node allLeaf = new Node(sh, m.get(sh), null, null);
 			buffer.add(allLeaf);
 		}
 
@@ -51,7 +60,7 @@ public class HuffmanTree {
 			Node first = buffer.poll();
 			Node second = buffer.poll();
 			int interFreq = first.getFreq() + second.getFreq();
-			Node cur = new Node('\u0000', interFreq, first, second);
+			Node cur = new Node((short) -1, interFreq, first, second);
 			buffer.add(cur);
 		}
 
@@ -66,17 +75,16 @@ public class HuffmanTree {
 	}
 
 	public Node HuffmanTreeHelper(BitInputStream in) {
-		Node cur = null;
-		if (in.hasBits()) {
-			int bit = in.readBit();
-			if(bit == 0) {
-				cur = new Node((char)in.readBits(9), 0, null, null);
-			} else {
-				cur = new Node((char) -1, 0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
-			}
-		}
-		return cur;
+		int temp = in.readBit();
+		if(temp == 1) {
+			return new Node(HuffmanTreeHelper(in), HuffmanTreeHelper(in));
+		} else if (temp == 0) {
+			return new Node (short) in.readBits(9);
+		} else
+			throw new IllegalArgumentException();
 	}
+
+
 
 	public void serialize(BitOutputStream out) {
 		serializeHelper(root, out);
@@ -105,18 +113,20 @@ public class HuffmanTree {
 	}
 
 	public void decode(BitInputStream in, BitOutputStream out) {
-		while(in.hasBits()) {
-			Node cur = this.root;
-			while(cur.type == '\u0000') {
-				if(in.readBit() == 0) {
+		int temp = in.readBit();
+		Node cur = root;
+		while(temp != -1) {
+			while(!cur.isLeaf()) {
+				if(temp == 1) {
 					cur = cur.left;
 				} else {
 					cur = cur.right;
 				}
+				temp = in.readBit();
 			}
 			out.writeBits(cur.type, 9);
 		}
-
+			cur = root;
 	}
 }
 
