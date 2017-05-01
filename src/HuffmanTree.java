@@ -51,7 +51,7 @@ public class HuffmanTree {
 			Node first = buffer.poll();
 			Node second = buffer.poll();
 			int interFreq = first.getFreq() + second.getFreq();
-			Node cur = new Node((Character) null, interFreq, first, second);
+			Node cur = new Node('\u0000', interFreq, first, second);
 			buffer.add(cur);
 		}
 
@@ -84,7 +84,7 @@ public class HuffmanTree {
 
 	public static void serializeHelper(Node cur, BitOutputStream out) {
 		if(cur != null) {
-			if(cur.type != -1) {
+			if(cur.type != '\u0000') {
 				out.writeBit(0);
 				out.writeBits(cur.type, 9);
 			} else {
@@ -107,7 +107,7 @@ public class HuffmanTree {
 	public void decode(BitInputStream in, BitOutputStream out) {
 		while(in.hasBits()) {
 			Node cur = this.root;
-			while(cur.type == -1) {
+			while(cur.type == '\u0000') {
 				if(in.readBit() == 0) {
 					cur = cur.left;
 				} else {
@@ -118,7 +118,5 @@ public class HuffmanTree {
 		}
 
 	}
-
-
 }
 
