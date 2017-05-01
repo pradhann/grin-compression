@@ -30,9 +30,6 @@ public class HuffmanTree {
 			return freq;
 		}
 
-		public short getBits() {
-			return type;
-		}
 
 		public int compareTo(Node o1) {
 			if(o1.getFreq() > this.getFreq()) {
@@ -45,10 +42,8 @@ public class HuffmanTree {
 		}
 
 		public boolean isLeaf() {
-			return type != -1;
+			return type == 0;
 		}
-
-
 	}
 
 
@@ -69,7 +64,7 @@ public class HuffmanTree {
 			Node first = buffer.poll();
 			Node second = buffer.poll();
 			int interFreq = first.getFreq() + second.getFreq();
-			Node cur = new Node((short) -1, interFreq, first, second);
+			Node cur = new Node((short) 0, interFreq, first, second);
 			buffer.add(cur);
 		}
 
@@ -131,11 +126,11 @@ public class HuffmanTree {
 				} else {
 					cur = cur.right;
 				}
+			}
 				temp = in.readBit();
 			}
 			out.writeBits(cur.type, 9);
-		}
-		cur = root;
+			cur = root;
+		}	
 	}
-}
 
