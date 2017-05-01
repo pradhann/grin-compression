@@ -72,7 +72,7 @@ public class HuffmanTree {
 			if(bit == 0) {
 				cur = new Node((char)in.readBits(9), 0, null, null);
 			} else {
-				cur = new Node((char) -1, 0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
+				cur = new Node('\u0000', 0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
 			}
 		}
 		return cur;
