@@ -113,7 +113,7 @@ public class HuffmanTree {
 
 
 	private void decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
-		
+
 		if (cur.right == null && cur.left == null) {
 			if (cur.type != 256) {
 				out.writeBits(cur.type, 8);
@@ -129,28 +129,11 @@ public class HuffmanTree {
 			decodeHelper (in, out, cur.right);
 		}
 	}
-	
+
 	public void decode(BitInputStream in, BitOutputStream out){
 		while (in.hasBits()) {
 			decodeHelper (in, out, root);
 		}
 	}
-
-//	public void decode(BitInputStream in, BitOutputStream out) {
-//		int temp = in.readBit();
-//		Node cur = root;
-//		while(temp != -1) {
-//			while(!cur.isLeaf()) {
-//				if(temp == 1) {
-//					cur = cur.left;
-//				} else {
-//					cur = cur.right;
-//				}
-//			}
-//			out.writeBits(cur.type, 9);
-//			cur = root;
-//			temp = in.readBit();
-//		}
-//	}	
 }
 
