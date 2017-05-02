@@ -75,26 +75,17 @@ public class HuffmanTree {
 	}
 
 	public Node HuffmanTreeHelper(BitInputStream in) {
-<<<<<<< HEAD
-		int temp = in.readBit();
-		if(temp == 1) {
-			return new Node(HuffmanTreeHelper(in), HuffmanTreeHelper(in));
-		} else if (temp == 0) {
-			return new Node (short) in.readBits(9);
-		} else
-			throw new IllegalArgumentException();
-=======
+
 		Node cur = null;
 		if (in.hasBits()) {
 			int bit = in.readBit();
 			if(bit == 0) {
-				cur = new Node((char)in.readBits(9), 0, null, null);
+				cur = new Node((short)in.readBits(9), 0, null, null);
 			} else {
-				cur = new Node('\u0000', 0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
+				cur = new Node((short) -1, 0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
 			}
 		}
 		return cur;
->>>>>>> a72ccc9014c5cc2fd7977eb15311b41c0ff28f43
 	}
 
 
