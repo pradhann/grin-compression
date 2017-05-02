@@ -42,7 +42,7 @@ public class HuffmanTree {
 		}
 
 		public boolean isLeaf() {
-			return type == 0;
+			return type != 0;
 		}
 	}
 
@@ -108,29 +108,49 @@ public class HuffmanTree {
 	}
 
 
-
-
-
-
 	public void encode(BitInputStream in, BitOutputStream out) {
-
 	}
 
-	public void decode(BitInputStream in, BitOutputStream out) {
-		int temp = in.readBit();
-		Node cur = root;
-		while(temp != -1) {
-			while(!cur.isLeaf()) {
-				if(temp == 1) {
-					cur = cur.left;
-				} else {
-					cur = cur.right;
-				}
+
+	private void decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
+		
+		if (cur.right == null && cur.left == null) {
+			if (cur.type != -1) {
+				out.writeBits(cur.type, 8);
+				return;
+			} else {
+				return;
 			}
-				temp = in.readBit();
-			}
-			out.writeBits(cur.type, 9);
-			cur = root;
-		}	
+		}
+		int bit = in.readBit(); 
+		if (bit == 0) {
+			decodeHelper (in, out, cur.left);
+		} else if (bit == 1) {
+			decodeHelper (in, out, cur.right);
+		}
 	}
+	
+	public void decode(BitInputStream in, BitOutputStream out){
+		while (in.hasBits()) {
+			decodeHelper (in, out, root);
+		}
+	}
+
+//	public void decode(BitInputStream in, BitOutputStream out) {
+//		int temp = in.readBit();
+//		Node cur = root;
+//		while(temp != -1) {
+//			while(!cur.isLeaf()) {
+//				if(temp == 1) {
+//					cur = cur.left;
+//				} else {
+//					cur = cur.right;
+//				}
+//			}
+//			out.writeBits(cur.type, 9);
+//			cur = root;
+//			temp = in.readBit();
+//		}
+//	}	
+}
 

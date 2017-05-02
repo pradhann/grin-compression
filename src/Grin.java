@@ -13,6 +13,8 @@ public class Grin {
 
 		HuffmanTree hTree = new HuffmanTree(in);
 		hTree.decode(in, out);
+		in.close();
+		out.close();
 
 
 	}
