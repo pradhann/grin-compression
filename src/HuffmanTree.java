@@ -115,7 +115,7 @@ public class HuffmanTree {
 	private void decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
 		
 		if (cur.right == null && cur.left == null) {
-			if (cur.type != -1) {
+			if (cur.type != 256) {
 				out.writeBits(cur.type, 8);
 				return;
 			} else {
