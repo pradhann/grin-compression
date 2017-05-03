@@ -32,6 +32,11 @@ public class HuffmanTree {
 		}
 
 
+		/**
+		 *  Compares two nodes based upon the frequency field.
+		 *  
+		 *  @return int a comparison integer
+		 */
 		public int compareTo(Node o1) {
 			if(o1.getFreq() > this.getFreq()) {
 				return -1; 
@@ -43,7 +48,12 @@ public class HuffmanTree {
 		}
 	}
 
-
+	/**
+	 * Creates a Huffman tree from the frequency map of characters
+	 *  for encoding a file.
+	 * 
+	 * @param m the frequency map for each character in the file
+	 */
 	public HuffmanTree(Map<Short, Integer> m) {
 		m.put((short) 256,1);
 		PriorityQueue<Node> buffer = new PriorityQueue<>();
@@ -67,11 +77,23 @@ public class HuffmanTree {
 	}
 
 
-
+	/**
+	 *  Creates a Huffman tree from the serialized version
+	 *  of the tree in the compressed file.
+	 * 
+	 * @param in a BitInputStream for the compressed file
+	 */
 	public HuffmanTree(BitInputStream in) {
 		root = HuffmanTreeHelper(in);
 	}
 
+	/**
+	 * Recursively builds the Huffman tree from the
+	 *  compressed file. 
+	 * 
+	 * @param in a BitInputStream of the compressed file
+	 * @return Node a node of the tree
+	 */
 	public Node HuffmanTreeHelper(BitInputStream in) {
 		int temp = in.readBit();
 		if(temp == 0) {
@@ -84,11 +106,22 @@ public class HuffmanTree {
 	}
 
 
-
+	/**
+	 *  Serializes the Huffman tree in preorder.
+	 * 
+	 * @param out a BitOutputStream of the output file
+	 */
 	public void serialize(BitOutputStream out) {
 		serializeHelper(root, out);
 	}
 
+	/**
+	 * Recursively writes each node of the Huffman tree to the given
+	 * output stream.
+	 * 
+	 * @param cur a Node of the Huffman tree
+	 * @param out a BitOutputStream to write to
+	 */
 	public static void serializeHelper(Node cur, BitOutputStream out) {
 		if(cur != null) {
 			if(cur.type != 0) {
@@ -102,7 +135,14 @@ public class HuffmanTree {
 		}
 	}
 
-
+	/**
+	 * Encodes the payload of the file to compress using values
+	 * obtained from the Huffman tree and writes the encodings 
+	 * to the given output stream.
+	 * 
+	 * @param in a BitInputStream of the file to compress
+	 * @param out a BitOutputStream of the file to write to
+	 */
 	public void encode(BitInputStream in, BitOutputStream out) {
 		Map<Short, String> allPaths = new HashMap<>();
 		findAllPaths(root, "", allPaths);
@@ -122,7 +162,13 @@ public class HuffmanTree {
 	}
 
 
-
+	/**
+	 *  Maps each character in the Huffman tree to its encoded value.
+	 *  
+	 * @param cur a Node of the Huffman tree
+	 * @param s a string of the encoded value
+	 * @param allPaths a map of short and string pairs
+	 */
 	private void findAllPaths(Node cur, String s, Map<Short, String> allPaths) {
 		if(cur == null) {
 			return;
@@ -135,6 +181,15 @@ public class HuffmanTree {
 	}
 
 
+	/**
+	 * Recursively reads the payload of the compressed file and locates the correct
+	 * character to decode using the encoded value as the path in the tree.
+	 * 
+	 * @param in a BitInputStream of the compressed file
+	 * @param out a BitOutputStream to write the decoded characters to
+	 * @param cur a Node of the Huffman tree
+	 * @return boolean if the character encountered is the eof character
+	 */
 	private boolean decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
 		if (cur.right == null && cur.left == null) {
 			if (cur.type != 256) {
@@ -152,6 +207,13 @@ public class HuffmanTree {
 		}
 	}
 
+	/**
+	 * Decodes the compressed file using the Huffman tree until 
+	 * the eof character is encountered.
+	 * 
+	 * @param in a BitInputStream of the compressed file
+	 * @param out a BitOutputStream to write the decoded characters to
+	 */
 	public void decode(BitInputStream in, BitOutputStream out){
 		boolean check = true;
 		while (in.hasBits() && check) {
