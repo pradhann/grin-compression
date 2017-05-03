@@ -2,9 +2,9 @@ import java.util.*;
 
 
 public class HuffmanTree {
+	private Node root;
 
-
-	private static class Node implements Comparator<Node> {
+	private static class Node implements Comparable<Node> {
 
 		private short type;
 		private  int freq;
@@ -17,32 +17,36 @@ public class HuffmanTree {
 			this.left = left;
 			this.right = right;
 		}
-		
+
+		public Node(short type, int freq) {
+			this.type = type;
+			this.freq = freq;
+			this.left = null;
+			this.right = null;
+		}
+
 
 		public int getFreq() {
 			return freq;
 		}
-		
-		public short getBits() {
-			return type;
-		}
 
-		public int compare(Node o1, Node o2) {
-			if(o1.getFreq() < o2.getFreq()) {
+
+		public int compareTo(Node o1) {
+			if(o1.getFreq() > this.getFreq()) {
 				return -1; 
-			} else if (o2.getFreq() < o1.getFreq()) {
+			} else if (this.getFreq() > o1.getFreq()) {
 				return 1;
 			} else {
 				return 0;
 			}
 		}
-		
+
 		public boolean isLeaf() {
-			return type != -1;
+			return type != 0;
 		}
 	}
 
-	private Node root;
+
 
 
 	public HuffmanTree(Map<Short, Integer> m) {
@@ -52,7 +56,7 @@ public class HuffmanTree {
 		ArrayList<Short> key = new ArrayList<Short>(m.keySet());
 
 		for(short sh : key) {
-			Node allLeaf = new Node(sh, m.get(sh), null, null);
+			Node allLeaf = new Node(sh, m.get(sh));
 			buffer.add(allLeaf);
 		}
 
@@ -60,7 +64,7 @@ public class HuffmanTree {
 			Node first = buffer.poll();
 			Node second = buffer.poll();
 			int interFreq = first.getFreq() + second.getFreq();
-			Node cur = new Node((short) -1, interFreq, first, second);
+			Node cur = new Node((short) 0, interFreq, first, second);
 			buffer.add(cur);
 		}
 
@@ -75,6 +79,7 @@ public class HuffmanTree {
 	}
 
 	public Node HuffmanTreeHelper(BitInputStream in) {
+<<<<<<< HEAD
 
 		Node cur = null;
 		if (in.hasBits()) {
@@ -86,6 +91,15 @@ public class HuffmanTree {
 			}
 		}
 		return cur;
+=======
+		int temp = in.readBit();
+		if(temp == 0) {
+			return new Node ((short) in.readBits(9), 0);
+		} else if (temp == 1) {
+			return new Node((short) 0,0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
+		} else
+			throw new IllegalArgumentException();		
+>>>>>>> 97fca02c36fcca5f0a87978e658e8f47ff9e607e
 	}
 
 
@@ -96,7 +110,7 @@ public class HuffmanTree {
 
 	public static void serializeHelper(Node cur, BitOutputStream out) {
 		if(cur != null) {
-			if(cur.type != '\u0000') {
+			if(cur.type != 0) {
 				out.writeBit(0);
 				out.writeBits(cur.type, 9);
 			} else {
@@ -108,29 +122,32 @@ public class HuffmanTree {
 	}
 
 
-
-
-
-
 	public void encode(BitInputStream in, BitOutputStream out) {
-
 	}
 
-	public void decode(BitInputStream in, BitOutputStream out) {
-		int temp = in.readBit();
-		Node cur = root;
-		while(temp != -1) {
-			while(!cur.isLeaf()) {
-				if(temp == 1) {
-					cur = cur.left;
-				} else {
-					cur = cur.right;
-				}
-				temp = in.readBit();
+
+	private void decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
+
+		if (cur.right == null && cur.left == null) {
+			if (cur.type != 256) {
+				out.writeBits(cur.type, 8);
+				return;
+			} else {
+				return;
 			}
-			out.writeBits(cur.type, 9);
 		}
-			cur = root;
+		int bit = in.readBit(); 
+		if (bit == 0) {
+			decodeHelper (in, out, cur.left);
+		} else if (bit == 1) {
+			decodeHelper (in, out, cur.right);
+		}
+	}
+
+	public void decode(BitInputStream in, BitOutputStream out){
+		while (in.hasBits()) {
+			decodeHelper (in, out, root);
+		}
 	}
 }
 
