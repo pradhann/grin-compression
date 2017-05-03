@@ -79,19 +79,6 @@ public class HuffmanTree {
 	}
 
 	public Node HuffmanTreeHelper(BitInputStream in) {
-<<<<<<< HEAD
-
-		Node cur = null;
-		if (in.hasBits()) {
-			int bit = in.readBit();
-			if(bit == 0) {
-				cur = new Node((short)in.readBits(9), 0, null, null);
-			} else {
-				cur = new Node((short) -1, 0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
-			}
-		}
-		return cur;
-=======
 		int temp = in.readBit();
 		if(temp == 0) {
 			return new Node ((short) in.readBits(9), 0);
@@ -99,7 +86,7 @@ public class HuffmanTree {
 			return new Node((short) 0,0, HuffmanTreeHelper(in), HuffmanTreeHelper(in));
 		} else
 			throw new IllegalArgumentException();		
->>>>>>> 97fca02c36fcca5f0a87978e658e8f47ff9e607e
+
 	}
 
 
@@ -123,17 +110,46 @@ public class HuffmanTree {
 
 
 	public void encode(BitInputStream in, BitOutputStream out) {
+		Map<Short, String> allPaths = new HashMap<>();
+		findAllPaths(root, "", allPaths);
+		while(in.hasBits()) {
+			short cur = (short) in.readBits(8);
+			if(allPaths.containsKey(cur)) {
+				String curPath = allPaths.get(cur);
+				for(char c : curPath.toCharArray() ) {
+					out.writeBit(c - 48);
+				}
+			}
+		}
+		String eof = allPaths.get((short) 256);
+		for(char c : eof.toCharArray() ) {
+			out.writeBit(c - 48);
+		}
+		
 	}
 
 
-	private void decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
+
+	private void findAllPaths(Node cur, String s, Map<Short, String> allPaths) {
+		if(cur == null) {
+			return;
+		} else if (cur.left != null && cur.right != null) {
+			findAllPaths(cur.left, s + "0", allPaths);
+			findAllPaths(cur.right, s + "1", allPaths);
+		} else {
+			allPaths.put(cur.type, s);
+		}
+	}
+
+
+	private boolean decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
 
 		if (cur.right == null && cur.left == null) {
 			if (cur.type != 256) {
 				out.writeBits(cur.type, 8);
-				return;
+				return true;
 			} else {
-				return;
+				return false;
 			}
 		}
 		int bit = in.readBit(); 
@@ -142,11 +158,13 @@ public class HuffmanTree {
 		} else if (bit == 1) {
 			decodeHelper (in, out, cur.right);
 		}
+		return true;
 	}
 
 	public void decode(BitInputStream in, BitOutputStream out){
-		while (in.hasBits()) {
-			decodeHelper (in, out, root);
+		boolean check = true;
+		while (in.hasBits() && check) {
+			check = decodeHelper (in, out, root);
 		}
 	}
 }

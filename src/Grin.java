@@ -1,4 +1,7 @@
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Grin {
 
@@ -13,25 +16,45 @@ public class Grin {
 
 		HuffmanTree hTree = new HuffmanTree(in);
 		hTree.decode(in, out);
-<<<<<<< HEAD
+
 		
 		in.close();
 		out.close();
 	}
 	
-	public static void main(String[] args) throws IOException {
-		if (args[0].equals("decode")) {
-		String infile = args[1];
-		String outfile = args[2];
-		decode(infile, outfile);
-		}
-=======
+	public static void encode(String infile, String outfile) throws IOException {
+		Map<Short, Integer> map = createFrequencyMap(infile);
+		
+		BitInputStream in = new BitInputStream(infile);
+		BitOutputStream out = new BitOutputStream(outfile);
+		
+		HuffmanTree hTree = new HuffmanTree(map);
+		
+		out.writeBits(1846, 32);
+		
+		hTree.serialize(out);
+		hTree.encode(in, out);
+		
 		in.close();
 		out.close();
-
->>>>>>> 97fca02c36fcca5f0a87978e658e8f47ff9e607e
-
 	}
+	
+	
+	public static Map<Short, Integer>  createFrequencyMap(String file) throws IOException {
+		Map<Short, Integer> map = new HashMap<>();
+		BitInputStream infile = new BitInputStream(file);
+		while(infile.hasBits()) {
+			short current = (short) infile.readBits(8);
+			if(!map.containsKey(current)) {
+				map.put(current, 1);
+			} else {
+				int temp = map.get(current);
+				map.put(current, ++temp);
+			}
+		}
+		return map;
+	}
+	
 
 	public static void main(String[] args)  throws IOException {
 		if(args.length != 3) {
@@ -48,7 +71,7 @@ public class Grin {
 			break;
 
 		case "encode" :
-			//insert
+			Grin.encode(infile, outfile);
 			break;
 
 		default:
