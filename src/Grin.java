@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class Grin {
 
@@ -43,6 +42,7 @@ public class Grin {
 	public static Map<Short, Integer>  createFrequencyMap(String file) throws IOException {
 		Map<Short, Integer> map = new HashMap<>();
 		BitInputStream infile = new BitInputStream(file);
+		
 		while(infile.hasBits()) {
 			short current = (short) infile.readBits(8);
 			if(!map.containsKey(current)) {

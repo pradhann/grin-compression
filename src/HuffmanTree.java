@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 
@@ -40,17 +41,10 @@ public class HuffmanTree {
 				return 0;
 			}
 		}
-
-		public boolean isLeaf() {
-			return type != 0;
-		}
 	}
 
 
-
-
 	public HuffmanTree(Map<Short, Integer> m) {
-
 		m.put((short) 256,1);
 		PriorityQueue<Node> buffer = new PriorityQueue<>();
 		ArrayList<Short> key = new ArrayList<Short>(m.keySet());
@@ -124,8 +118,7 @@ public class HuffmanTree {
 		String eof = allPaths.get((short) 256);
 		for(char c : eof.toCharArray() ) {
 			out.writeBit(c - 48);
-		}
-		
+		}	
 	}
 
 
@@ -143,7 +136,6 @@ public class HuffmanTree {
 
 
 	private boolean decodeHelper (BitInputStream in, BitOutputStream out, Node cur) {
-
 		if (cur.right == null && cur.left == null) {
 			if (cur.type != 256) {
 				out.writeBits(cur.type, 8);
@@ -154,11 +146,10 @@ public class HuffmanTree {
 		}
 		int bit = in.readBit(); 
 		if (bit == 0) {
-			decodeHelper (in, out, cur.left);
-		} else if (bit == 1) {
-			decodeHelper (in, out, cur.right);
+			return decodeHelper (in, out, cur.left);
+		} else {
+			return decodeHelper (in, out, cur.right);
 		}
-		return true;
 	}
 
 	public void decode(BitInputStream in, BitOutputStream out){
