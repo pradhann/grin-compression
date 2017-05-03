@@ -1,4 +1,4 @@
-##CSC 207 (Spring 2017) Homework: Grin Compression##
+## CSC 207 (Spring 2017) Homework: Grin Compression
 
 [Grin
 Compression](http://www.cs.grinnell.edu/~osera/courses/csc207/17sp/homeworks/grin-compression.html)
